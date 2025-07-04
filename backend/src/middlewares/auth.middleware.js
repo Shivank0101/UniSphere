@@ -1,5 +1,3 @@
-
-
 //Explanation  ye logout krne k liye custom middleware banaya h
 
 
@@ -33,3 +31,18 @@ export const verifyJWT = asyncHandler(async(req, _, next) => {
     }
     
 })
+
+// Middleware to verify if user is faculty
+export const verifyFaculty = asyncHandler(async(req, res, next) => {
+    // Ensure user is authenticated first
+    if (!req.user) {
+        throw new ApiError(401, "Authentication required");
+    }
+    
+    // Check if user has faculty role
+    if (req.user.role !== "faculty") {
+        throw new ApiError(403, "Faculty access required");
+    }
+    
+    next();
+});

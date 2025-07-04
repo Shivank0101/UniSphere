@@ -4,22 +4,36 @@ import {
   getEvents,
   createEvent,
   deleteEvent,
-  addAttendee,
+  registerForEvent,
+  unregisterFromEvent,
   sendReminder,
   searchEvents,
   getEventById,
-  updateEvent  // added this line
+  updateEvent,
+  getEventsByClub,
+  getEventsByOrganizer,
+  getUpcomingEvents,
+  deactivateEvent
 } from '../controllers/event.controllers.js';
+import { verifyJWT } from '../middlewares/auth.middleware.js';
 
+// Public routes
 router.get('/', getEvents);
-router.post('/', createEvent);
-// new part below
-router.put('/:id', updateEvent);
-
-router.delete('/:id', deleteEvent);
-router.post('/attendees/:eventId', addAttendee);
-router.post('/reminder/:eventId', sendReminder);
+router.get('/upcoming', getUpcomingEvents);
 router.get('/search', searchEvents);
+router.get('/club/:clubId', getEventsByClub);
+router.get('/organizer/:organizerId', getEventsByOrganizer);
 router.get('/:id', getEventById);
+
+// Protected routes (require authentication)
+router.post('/', verifyJWT, createEvent);
+router.post('/register/:eventId', verifyJWT, registerForEvent);
+router.post('/unregister/:eventId', verifyJWT, unregisterFromEvent);
+router.post('/reminder/:eventId', verifyJWT, sendReminder);
+
+router.put('/:id', verifyJWT, updateEvent);
+router.put('/deactivate/:id', verifyJWT, deactivateEvent);
+
+router.delete('/:id', verifyJWT, deleteEvent);
 
 export default router;

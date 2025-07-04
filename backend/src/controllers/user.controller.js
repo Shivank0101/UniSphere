@@ -316,12 +316,15 @@ const getMyClubs = asyncHandler(async (req, res) => {
         throw new ApiError(404, "User not found");
     }
 
+    // Ensure user.clubs exists and is an array
+    const userClubs = user.clubs || [];
+
     return res
         .status(200)
         .json(
             new ApiResponse(
                 200,
-                user.clubs,
+                userClubs,
                 "User clubs retrieved successfully"
             )
         );
