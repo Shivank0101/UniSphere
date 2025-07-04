@@ -1,35 +1,46 @@
-const express = require('express');
-const mongoose = require('mongoose');
-const cors = require('cors');
-const dotenv = require('dotenv');
-const notificationRoutes = require('./routes/notifications');
-const eventRoutes = require('./routes/eventRoutes');
+import express from "express";
+import cors from "cors";
+import dotenv from "dotenv";
+import cookieParser from "cookie-parser";
+import connectDb from "./src/db/db.config.js";
+
+// Import routes
+import userRouter from "./src/routes/user.routes.js";
+import eventRoutes from "./src/routes/event.routes.js";
+// import eventRouter from "./src/routes/event.routes.js";
+// import clubRouter from "./src/routes/club.routes.js";
+// import registrationRouter from "./src/routes/registrations.routes.js";
+// import attendanceRouter from "./src/routes/attendance.routes.js";
+// import notificationRouter from "./src/routes/notification.routes.js";
 
 dotenv.config();
-
 const app = express();
 
-app.use(cors());
-app.use(express.json());
+// Middlewares
+app.use(cors({
+    origin: process.env.CORS_ORIGIN || "http://localhost:3000",
+    credentials: true
+}));
+app.use(express.json({ limit: "16kb" }));
+app.use(express.urlencoded({ extended: true, limit: "16kb" }));
+app.use(cookieParser());
 
-//mongodb connection
-mongoose.connect(process.env.MONGO_URI, {
-  useNewUrlParser: true,
-  useUnifiedTopology: true
-})
-  .then(() => console.log('MongoDB connected'))
-  .catch((err) => console.log('MongoDB connection error:', err));
+// Routes
+app.use("/api/v1/users", userRouter);
+app.use('/api/v1/events', eventRoutes);
+// app.use("/api/v1/events", eventRouter);
+// app.use("/api/v1/clubs", clubRouter);
+// app.use("/api/v1/registrations", registrationRouter);
+// app.use("/api/v1/attendance", attendanceRouter);
+// app.use("/api/v1/notifications", notificationRouter);
 
-app.use('/api/events', eventRoutes);
-app.use('/api/notifications', notificationRoutes);
+const PORT = process.env.PORT || 5000;
 
-// ✅ Dummy user route to fix Navbar.js 404 error
-app.get('/api/user', (req, res) => {
-  res.json({ name: 'Guest User', email: 'guest@example.com' });
+app.get("/", (req, res) => {
+  res.send("Welcome to the Unisphere Server!");
 });
+connectDb()
 
-const PORT = process.env.PORT || 5001;
 app.listen(PORT, () => {
-  console.log(`Server running on port ${PORT}`);
+  console.log(`Server is running on port ${PORT}`);
 });
-

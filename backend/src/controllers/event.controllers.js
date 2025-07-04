@@ -1,7 +1,7 @@
-const Event = require('../models/Event');
-const nodemailer = require('nodemailer');
+import Event from '../models/event.model.js';
+import nodemailer from 'nodemailer';
 
-exports.getEvents = async (req, res) => {
+export const getEvents = async (req, res) => {
   try {
     const events = await Event.find();
     res.json(events);
@@ -10,7 +10,7 @@ exports.getEvents = async (req, res) => {
   }
 };
 
-exports.getEventById = async (req, res) => {
+export const getEventById = async (req, res) => {
   try {
     const event = await Event.findById(req.params.id);
     if (!event) {
@@ -22,7 +22,7 @@ exports.getEventById = async (req, res) => {
   }
 };
 
-exports.createEvent = async (req, res) => {
+export const createEvent = async (req, res) => {
   const { name, date,location,description } = req.body;
   const eventDate = new Date(date);
   const now = new Date();
@@ -42,7 +42,7 @@ exports.createEvent = async (req, res) => {
 
 
 // edit event backend
-exports.updateEvent = async (req, res) => {
+export const updateEvent = async (req, res) => {
   try {
     const { name, date, location, description } = req.body;
     const updatedEvent = await Event.findByIdAndUpdate(
@@ -62,7 +62,7 @@ exports.updateEvent = async (req, res) => {
 };
 // the end
 
-exports.addAttendee = async (req, res) => {
+export const addAttendee = async (req, res) => {
   const { name, email } = req.body;
   const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
@@ -82,7 +82,7 @@ exports.addAttendee = async (req, res) => {
   }
 };
 
-exports.sendReminder = async (req, res) => {
+export const sendReminder = async (req, res) => {
   const event = await Event.findById(req.params.eventId);
   if (!event) return res.status(404).json({ message: 'Event not found' });
 
@@ -113,7 +113,7 @@ exports.sendReminder = async (req, res) => {
 };
 
 
-exports.searchEvents = async (req, res) => {
+export const searchEvents = async (req, res) => {
   const { name, date } = req.query;
   let filter = {};
 
@@ -133,7 +133,7 @@ exports.searchEvents = async (req, res) => {
   }
 };
 
-exports.deleteEvent = async (req, res) => {
+export const deleteEvent = async (req, res) => {
   try {
     const event = await Event.findByIdAndDelete(req.params.id);
     if (!event) return res.status(404).json({ message: 'Event not found' });

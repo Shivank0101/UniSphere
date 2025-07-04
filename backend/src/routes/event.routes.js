@@ -1,6 +1,6 @@
-const express = require('express');
+import express from 'express';
 const router = express.Router();
-const {
+import {
   getEvents,
   createEvent,
   deleteEvent,
@@ -9,7 +9,7 @@ const {
   searchEvents,
   getEventById,
   updateEvent  // added this line
-} = require('../controllers/eventController');
+} from '../controllers/event.controllers.js';
 
 router.get('/', getEvents);
 router.post('/', createEvent);
@@ -22,4 +22,4 @@ router.post('/reminder/:eventId', sendReminder);
 router.get('/search', searchEvents);
 router.get('/:id', getEventById);
 
-module.exports = router;
+export default router;
