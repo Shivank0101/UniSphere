@@ -9,7 +9,7 @@ import userRouter from "./src/routes/user.routes.js";
 import eventRoutes from "./src/routes/event.routes.js";
 import clubRouter from "./src/routes/club.routes.js";
 // import registrationRouter from "./src/routes/registrations.routes.js";
-// import attendanceRouter from "./src/routes/attendance.routes.js";
+import attendanceRouter from "./src/routes/attendance.routes.js";
 // import notificationRouter from "./src/routes/notification.routes.js";
 
 dotenv.config();
@@ -29,7 +29,7 @@ app.use("/api/v1/users", userRouter);
 app.use('/api/v1/events', eventRoutes);
 app.use("/api/v1/clubs", clubRouter);
 // app.use("/api/v1/registrations", registrationRouter);
-// app.use("/api/v1/attendance", attendanceRouter);
+app.use("/api/v1/attendance", attendanceRouter);
 // app.use("/api/v1/notifications", notificationRouter);
 
 const PORT = process.env.PORT || 5000;

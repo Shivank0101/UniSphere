@@ -2,7 +2,6 @@ import { Event } from '../models/event.model.js';
 import { Club } from '../models/club.model.js';
 import { User } from '../models/user.model.js';
 import { Registration } from '../models/registration.model.js';
-import nodemailer from 'nodemailer';
 
 export const getEvents = async (req, res) => {
   try {
@@ -129,100 +128,6 @@ export const updateEvent = async (req, res) => {
     res.status(500).json({ error: err.message });
   }
 };
-// the end
-
-export const registerForEvent = async (req, res) => {
-  const { userId } = req.body;
-  const eventId = req.params.eventId;
-
-  try {
-    const event = await Event.findById(eventId);
-    if (!event) {
-      return res.status(404).json({ message: 'Event not found' });
-    }
-
-    if (!event.isActive) {
-      return res.status(400).json({ message: 'Event is not active' });
-    }
-
-    // Check if event has reached maximum capacity
-    if (event.maxCapacity && event.registrations.length >= event.maxCapacity) {
-      return res.status(400).json({ message: 'Event has reached maximum capacity' });
-    }
-
-    // Check if user is already registered
-    if (event.registrations.includes(userId)) {
-      return res.status(409).json({ message: 'User is already registered for this event' });
-    }
-
-    // Add user to registrations
-    event.registrations.push(userId);
-    await event.save();
-
-    const updatedEvent = await Event.findById(eventId)
-      .populate('club', 'name category')
-      .populate('organizer', 'name email')
-      .populate('registrations', 'name email');
-
-    res.status(200).json({
-      message: 'Successfully registered for event',
-      event: updatedEvent
-    });
-  } catch (err) {
-    res.status(500).json({ error: err.message });
-  }
-};
-
-export const sendReminder = async (req, res) => {
-  try {
-    const event = await Event.findById(req.params.eventId)
-      .populate('registrations', 'name email');
-    
-    if (!event) {
-      return res.status(404).json({ message: 'Event not found' });
-    }
-
-    if (!event.registrations || event.registrations.length === 0) {
-      return res.status(400).json({ message: 'No registered users found for this event' });
-    }
-
-    const transporter = nodemailer.createTransport({
-      service: 'gmail',
-      auth: {
-        user: process.env.EMAIL_USER,
-        pass: process.env.EMAIL_PASS
-      }
-    });
-
-    const sendMailPromises = event.registrations.map(user => {
-      const mailOptions = {
-        from: process.env.EMAIL_USER,
-        to: user.email,
-        subject: `Reminder for ${event.title}`,
-        html: `
-          <h2>Event Reminder</h2>
-          <p>Hi ${user.name},</p>
-          <p>This is a reminder for the upcoming event: <strong>${event.title}</strong></p>
-          <p><strong>Date:</strong> ${new Date(event.startDate).toLocaleDateString()}</p>
-          <p><strong>Time:</strong> ${new Date(event.startDate).toLocaleTimeString()}</p>
-          <p><strong>Location:</strong> ${event.location}</p>
-          <p><strong>Description:</strong> ${event.description}</p>
-          <p>We look forward to seeing you there!</p>
-        `
-      };
-      return transporter.sendMail(mailOptions);
-    });
-
-    await Promise.all(sendMailPromises);
-    res.status(200).json({ 
-      message: 'Reminders sent successfully',
-      sentTo: event.registrations.length 
-    });
-  } catch (error) {
-    res.status(500).json({ error: error.message });
-  }
-};
-
 
 export const searchEvents = async (req, res) => {
   const { title, location, eventType, startDate, endDate, tags } = req.query;
@@ -304,39 +209,7 @@ export const getEventsByOrganizer = async (req, res) => {
   }
 };
 
-// Unregister from event
-export const unregisterFromEvent = async (req, res) => {
-  const { userId } = req.body;
-  const eventId = req.params.eventId;
 
-  try {
-    const event = await Event.findById(eventId);
-    if (!event) {
-      return res.status(404).json({ message: 'Event not found' });
-    }
-
-    // Check if user is registered
-    if (!event.registrations.includes(userId)) {
-      return res.status(400).json({ message: 'User is not registered for this event' });
-    }
-
-    // Remove user from registrations
-    event.registrations = event.registrations.filter(id => id.toString() !== userId);
-    await event.save();
-
-    const updatedEvent = await Event.findById(eventId)
-      .populate('club', 'name category')
-      .populate('organizer', 'name email')
-      .populate('registrations', 'name email');
-
-    res.status(200).json({
-      message: 'Successfully unregistered from event',
-      event: updatedEvent
-    });
-  } catch (err) {
-    res.status(500).json({ error: err.message });
-  }
-};
 
 // Get upcoming events
 export const getUpcomingEvents = async (req, res) => {

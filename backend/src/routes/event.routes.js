@@ -4,9 +4,6 @@ import {
   getEvents,
   createEvent,
   deleteEvent,
-  registerForEvent,
-  unregisterFromEvent,
-  sendReminder,
   searchEvents,
   getEventById,
   updateEvent,
@@ -27,10 +24,6 @@ router.get('/:id', getEventById);
 
 // Protected routes (require authentication)
 router.post('/', verifyJWT, createEvent);
-router.post('/register/:eventId', verifyJWT, registerForEvent);
-router.post('/unregister/:eventId', verifyJWT, unregisterFromEvent);
-router.post('/reminder/:eventId', verifyJWT, sendReminder);
-
 router.put('/:id', verifyJWT, updateEvent);
 router.put('/deactivate/:id', verifyJWT, deactivateEvent);
 

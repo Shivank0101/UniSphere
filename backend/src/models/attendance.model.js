@@ -1,4 +1,5 @@
 import mongoose from "mongoose";
+import mongoosePaginate from "mongoose-paginate-v2";
 
 const attendanceSchema = new mongoose.Schema({
     user: {
@@ -40,5 +41,8 @@ attendanceSchema.index({ event: 1 });
 attendanceSchema.index({ user: 1 });
 attendanceSchema.index({ markedBy: 1 });
 attendanceSchema.index({ status: 1 });
+
+// Add pagination plugin
+attendanceSchema.plugin(mongoosePaginate);
 
 export const Attendance = mongoose.model("Attendance", attendanceSchema);

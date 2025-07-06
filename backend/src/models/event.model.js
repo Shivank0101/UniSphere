@@ -53,7 +53,19 @@ const eventSchema = new mongoose.Schema({
     },
     tags: [{
         type: String,
-    }]
+    }],
+    qrSession: {
+        token: {
+            type: String,
+        },
+        expiresAt: {
+            type: Date,
+        },
+        createdBy: {
+            type: mongoose.Schema.Types.ObjectId,
+            ref: "User",
+        }
+    }
 }, {
     timestamps: true
 });
