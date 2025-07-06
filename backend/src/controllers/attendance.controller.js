@@ -115,6 +115,14 @@ const markAttendanceForOthers = asyncHandler(async (req, res) => {
                 });
             }
 
+            // Update registration status to "attended" if attendance is marked as present
+            if (status === "present") {
+                await Registration.findOneAndUpdate(
+                    { user: userId, event: eventId },
+                    { status: "attended" }
+                );
+            }
+
             await attendance.populate([
                 { path: "user", select: "name email" },
                 { path: "event", select: "title" }
@@ -362,6 +370,12 @@ const markAttendanceByQR = asyncHandler(async (req, res) => {
         status: "present",
         notes: "Marked via QR code"
     });
+
+    // Update registration status to "attended"
+    await Registration.findOneAndUpdate(
+        { user: userId, event: eventId },
+        { status: "attended" }
+    );
 
     await attendance.populate([
         { path: "user", select: "name email" },

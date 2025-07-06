@@ -1,4 +1,5 @@
 import mongoose from "mongoose";
+import mongoosePaginate from "mongoose-paginate-v2";
 
 const registrationSchema = new mongoose.Schema({
     user: {
@@ -34,5 +35,8 @@ registrationSchema.index({ user: 1, event: 1 }, { unique: true });
 registrationSchema.index({ event: 1 });
 registrationSchema.index({ user: 1 });
 registrationSchema.index({ status: 1 });
+
+// Add pagination plugin
+registrationSchema.plugin(mongoosePaginate);
 
 export const Registration = mongoose.model("Registration", registrationSchema);
